@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Routine Game</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f1f1f1; /* Background color for a student learning theme */
+      }
+      #game-container {
+        max-width: 600px;
+        margin: 50px auto;
+        background-color: #fff; /* Container background color */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+        margin: 10px;
+        width: 100px; /* Set the width to 100px */
+        height: 100px; /* Set the height to 100px */
+      }
+      #score {
+        font-size: 20px;
+        margin-top: 20px;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      }
+      .modal h2 {
+        color: #333;
+      }
+      .modal button {
+        padding: 10px;
+        margin-top: 10px;
+        cursor: pointer;
+        border: none;
+        background-color: #4caf50;
+        color: #fff;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container">
+      <h1>Daily Routine Game</h1>
+      <p id="question">What does the word <span id="word"></span> represent?</p>
+      <div id="image-container"></div>
+      <p id="score">Score: <span id="score-value">0</span></p>
+      <button onclick="nextQuestion()">Next Question</button>
+    </div>
+
+    <div id="correct-modal" class="modal">
+      <div class="modal-content">
+        <h2>Correct!</h2>
+        <button onclick="closeModal()">OK</button>
+      </div>
+    </div>
+
+    <div id="incorrect-modal" class="modal">
+      <div class="modal-content">
+        <h2>Incorrect. Try again!</h2>
+        <button onclick="closeModal()">OK</button>
+      </div>
+    </div>
+
+    <div id="final-score-modal" class="modal">
+      <div class="modal-content">
+        <h2>Game Over. Your final score is <span id="final-score">0</span></h2>
+        <button onclick="resetGame()">Play Again</button>
+      </div>
+    </div>
+
+    <script>
+      // Sample data for questions and answers
+      const questions = [
+        { word: "Tooth Brush", options: ["image9.jpg", "image6.jpg", "image8.jpg", "image1.jpg"] },
+        { word: "Taking Bath", options: ["image14.jpg", "image5.jpg", "image12.jpg", "image4.jpg"] },
+        { word: "Eating Breakfast", options: ["image7.jpg", "image6.jpg", "image10.jpg", "image11.jpg"] },
+        { word: "Going to School", options: ["image13.jpg", "image8.jpg", "image6.jpg", "image2.jpg"] },
+
+        // Add more questions as needed
+      ];
+
+      let currentQuestionIndex = 0;
+      let score = 0;
+
+      function startGame() {
+        showQuestion();
+      }
+
+      function showQuestion() {
+        const currentQuestion = questions[currentQuestionIndex];
+        document.getElementById("word").textContent = currentQuestion.word;
+
+        const imageContainer = document.getElementById("image-container");
+        imageContainer.innerHTML = "";
+
+        currentQuestion.options.forEach((option, index) => {
+          const img = document.createElement("img");
+          img.src = option;
+          img.alt = currentQuestion.word;
+          img.onclick = () => checkAnswer(index);
+          imageContainer.appendChild(img);
+        });
+      }
+
+      function checkAnswer(selectedIndex) {
+        if (selectedIndex === currentQuestionIndex) {
+          score += 10;
+          document.getElementById("score-value").textContent = score;
+          openCorrectModal();
+        } else {
+          openIncorrectModal();
+        }
+
+        if (currentQuestionIndex < questions.length - 1) {
+          currentQuestionIndex++;
+          showQuestion();
+        } else {
+          openFinalScoreModal();
+        }
+      }
+
+      function nextQuestion() {
+        closeModal();
+        if (currentQuestionIndex < questions.length - 1) {
+          currentQuestionIndex++;
+          showQuestion();
+        } else {
+          openFinalScoreModal();
+        }
+      }
+
+      function openCorrectModal() {
+        document.getElementById("correct-modal").style.display = "flex";
+      }
+
+      function openIncorrectModal() {
+        document.getElementById("incorrect-modal").style.display = "flex";
+      }
+
+      function openFinalScoreModal() {
+        document.getElementById("final-score-modal").style.display = "flex";
+        document.getElementById("final-score").textContent = score;
+      }
+
+      function closeModal() {
+        const modals = document.getElementsByClassName("modal");
+        for (const modal of modals) {
+          modal.style.display = "none";
+        }
+      }
+
+      function resetGame() {
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById("score-value").textContent = score;
+        showQuestion();
+        closeModal();
+      }
+
+      // Start the game when the page loads
+      window.onload = startGame;
+    </script>
+  </body>
+</html>
